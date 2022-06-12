@@ -4,7 +4,7 @@ author: "Kayla Washburn"
 
 runs:
   using: node16
-  main: "./src/setup-nu.js"
+  main: "./build/setup-nu.js"
 
 inputs:
   nu-version:

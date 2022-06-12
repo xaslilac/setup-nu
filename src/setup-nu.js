@@ -1,8 +1,5 @@
 const core = require("@actions/core");
 const tc = require("@actions/tool-cache");
-const os = require("os");
-const path = require("path");
-const process = require("process");
 
 /**
  * @param string version
