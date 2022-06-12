@@ -1,6 +1,7 @@
 .DS_Store
 .env*
 build/
+CODE_OF_CONDUCT.md
 dist/
 node_modules/
 package-lock.json
