@@ -7,21 +7,48 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    strategy:
-      fail-fast: false
-
-      matrix:
-        platform:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
-
-    runs-on: ${{ matrix.platform }}
+  check:
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
       - uses: ./
+        name: Run aslilac/setup-nu@v1
 
-      - run: nu ./tests/script.nu
+      - run: npm i
+
+      - run: npm exec prettier -- --check .
+        name: fmt
+
+      - run: npm run lint
+        name: lint
+
+      - run: nu ./build.nu
+        name: build
+
+      # Check to make sure that the build output is up to date
+      - run: git diff --exit-code --name-only ./build/
+        name: make sure build output is up-to-date
+
+  test:
+    needs: check
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        runs-on:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./
+        name: Run aslilac/setup-nu@v1
+
+      - run: nu ./test.nu

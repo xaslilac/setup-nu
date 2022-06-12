@@ -17,8 +17,6 @@ async function install(version: string) {
 
 	const bin = await extractNu(version);
 
-	core.info("bin: " + JSON.stringify(await fs.readdir(bin)));
-
 	core.info(`Cached Nu to ${bin}.`);
 	core.addPath(bin);
 }

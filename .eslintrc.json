@@ -1,0 +1,6 @@
+{
+	"extends": ["mckayla"],
+	"rules": {
+		"@typescript-eslint/no-floating-promises": "off"
+	}
+}
