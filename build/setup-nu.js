@@ -4959,7 +4959,7 @@ var require_tool_cache = __commonJS({
         yield exec_1.exec(`"${unzipPath}"`, args, { cwd: dest });
       });
     }
-    function cacheDir(sourceDir, tool, version2, arch) {
+    function cacheDir2(sourceDir, tool, version2, arch) {
       return __awaiter(this, void 0, void 0, function* () {
         version2 = semver.clean(version2) || version2;
         arch = arch || os.arch();
@@ -4977,7 +4977,7 @@ var require_tool_cache = __commonJS({
         return destPath;
       });
     }
-    exports.cacheDir = cacheDir;
+    exports.cacheDir = cacheDir2;
     function cacheFile(sourceFile, targetFile, tool, version2, arch) {
       return __awaiter(this, void 0, void 0, function* () {
         version2 = semver.clean(version2) || version2;
@@ -4996,7 +4996,7 @@ var require_tool_cache = __commonJS({
       });
     }
     exports.cacheFile = cacheFile;
-    function find(toolName, versionSpec, arch) {
+    function find2(toolName, versionSpec, arch) {
       if (!toolName) {
         throw new Error("toolName parameter is required");
       }
@@ -5023,7 +5023,7 @@ var require_tool_cache = __commonJS({
       }
       return toolPath;
     }
-    exports.find = find;
+    exports.find = find2;
     function findAllVersions(toolName, arch) {
       const versions = [];
       arch = arch || os.arch();
@@ -5169,9 +5169,16 @@ var tc = __toESM(require_tool_cache());
 var path = __toESM(require("path"));
 async function install(version2) {
   core.info(`Setting up Nu ${version2}...`);
+  const cachedPath = tc.find("nu", version2);
+  if (cachedPath) {
+    core.info(`Using cached Nu installation from ${cachedPath}.`);
+    core.addPath(cachedPath);
+    return;
+  }
   const bin = await extractNu(version2);
+  const newCachedPath = await tc.cacheDir(bin, "nu", version2);
   core.info(`Cached Nu to ${bin}.`);
-  core.addPath(bin);
+  core.addPath(newCachedPath);
 }
 async function extractNu(version2) {
   const assetPrefix = `nu_${version2.replaceAll(".", "_")}`;
