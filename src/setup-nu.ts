@@ -25,7 +25,7 @@ async function install(version: string) {
 
 async function extractNu(version: string) {
 	const assetPrefix = `nu_${version.replaceAll(".", "_")}`;
-	const assetUrlBase = `https://github.com/nushell/nushell/releases/download/${version}/${releaseAssetPrefix}`;
+	const assetUrlBase = `https://github.com/nushell/nushell/releases/download/${version}/${assetPrefix}`;
 
 	switch (process.platform) {
 		case "linux": {

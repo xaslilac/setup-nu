@@ -5177,7 +5177,7 @@ async function install(version2) {
 }
 async function extractNu(version2) {
   const assetPrefix = `nu_${version2.replaceAll(".", "_")}`;
-  const assetUrlBase = `https://github.com/nushell/nushell/releases/download/${version2}/${releaseAssetPrefix}`;
+  const assetUrlBase = `https://github.com/nushell/nushell/releases/download/${version2}/${assetPrefix}`;
   switch (process.platform) {
     case "linux": {
       const assetUrl = `${assetUrlBase}_linux.tar.gz`;
