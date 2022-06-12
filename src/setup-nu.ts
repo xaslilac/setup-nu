@@ -1,10 +1,7 @@
-const core = require("@actions/core");
-const tc = require("@actions/tool-cache");
+import * as core from "@actions/core";
+import * as tc from "@actions/tool-cache";
 
-/**
- * @param string version
- */
-async function install(version) {
+async function install(version: string) {
 	core.info(`Setting up Nu ${version}...`);
 
 	const cachedPath = tc.find("nu", version);
@@ -15,7 +12,7 @@ async function install(version) {
 	}
 
 	const file = fileName(version);
-	const url = `https://github.com/nushell/nushell/releases/download/0.63.0/v${version}/${file}`;
+	const url = `https://github.com/nushell/nushell/releases/download/${version}/${file}`;
 
 	core.info(`Downloading Nu from ${url}.`);
 	const zipPath = await tc.downloadTool(url);
@@ -26,7 +23,7 @@ async function install(version) {
 	core.addPath(newCachedPath);
 }
 
-function fileName(version) {
+function fileName(version: string) {
 	const prefix = `nu_${version.replaceAll(".", "_")}`;
 	// TODO: `process.arch` `"arm64"` `"x64"`
 	switch (process.platform) {
@@ -42,5 +39,4 @@ function fileName(version) {
 }
 
 const version = core.getInput("nu-version");
-
 install(version);

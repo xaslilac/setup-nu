@@ -1,7 +1,21 @@
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -736,12 +750,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info = this._prepareRequest(verb, parsedUrl, headers);
+          let info2 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info, data);
+            response = yield this.requestRaw(info2, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -751,7 +765,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info, data);
+                return authenticationHandler.handleAuthentication(this, info2, data);
               } else {
                 return response;
               }
@@ -774,8 +788,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info, data);
+              info2 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info2, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -796,7 +810,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info, data) {
+      requestRaw(info2, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -808,16 +822,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info, data, callbackForResult);
+            this.requestRawWithCallback(info2, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info, data, onResult) {
+      requestRawWithCallback(info2, data, onResult) {
         if (typeof data === "string") {
-          if (!info.options.headers) {
-            info.options.headers = {};
+          if (!info2.options.headers) {
+            info2.options.headers = {};
           }
-          info.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info2.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -826,7 +840,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info.httpModule.request(info.options, (msg) => {
+        const req = info2.httpModule.request(info2.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -838,7 +852,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info.options.path}`));
+          handleResult(new Error(`Request timeout: ${info2.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -860,27 +874,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info = {};
-        info.parsedUrl = requestUrl;
-        const usingSsl = info.parsedUrl.protocol === "https:";
-        info.httpModule = usingSsl ? https : http;
+        const info2 = {};
+        info2.parsedUrl = requestUrl;
+        const usingSsl = info2.parsedUrl.protocol === "https:";
+        info2.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info.options = {};
-        info.options.host = info.parsedUrl.hostname;
-        info.options.port = info.parsedUrl.port ? parseInt(info.parsedUrl.port) : defaultPort;
-        info.options.path = (info.parsedUrl.pathname || "") + (info.parsedUrl.search || "");
-        info.options.method = method;
-        info.options.headers = this._mergeHeaders(headers);
+        info2.options = {};
+        info2.options.host = info2.parsedUrl.hostname;
+        info2.options.port = info2.parsedUrl.port ? parseInt(info2.parsedUrl.port) : defaultPort;
+        info2.options.path = (info2.parsedUrl.pathname || "") + (info2.parsedUrl.search || "");
+        info2.options.method = method;
+        info2.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info.options.headers["user-agent"] = this.userAgent;
+          info2.options.headers["user-agent"] = this.userAgent;
         }
-        info.options.agent = this._getAgent(info.parsedUrl);
+        info2.options.agent = this._getAgent(info2.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info.options);
+            handler.prepareRequest(info2.options);
           }
         }
-        return info;
+        return info2;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1462,7 +1476,7 @@ var require_core = __commonJS({
       command_1.issueCommand("add-mask", {}, secret);
     }
     exports.setSecret = setSecret;
-    function addPath(inputPath) {
+    function addPath2(inputPath) {
       const filePath = process.env["GITHUB_PATH"] || "";
       if (filePath) {
         file_command_1.issueCommand("PATH", inputPath);
@@ -1471,8 +1485,8 @@ var require_core = __commonJS({
       }
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
-    exports.addPath = addPath;
-    function getInput(name, options) {
+    exports.addPath = addPath2;
+    function getInput2(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -1482,16 +1496,16 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports.getInput = getInput;
+    exports.getInput = getInput2;
     function getMultilineInput(name, options) {
-      const inputs = getInput(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput2(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
     exports.getMultilineInput = getMultilineInput;
     function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput(name, options);
+      const val = getInput2(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -1534,10 +1548,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info(message) {
+    function info2(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info;
+    exports.info = info2;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -3556,12 +3570,12 @@ var require_http_client = __commonJS({
           throw new Error("Client has already been disposed.");
         }
         let parsedUrl = new URL(requestUrl);
-        let info = this._prepareRequest(verb, parsedUrl, headers);
+        let info2 = this._prepareRequest(verb, parsedUrl, headers);
         let maxTries = this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1;
         let numTries = 0;
         let response;
         while (numTries < maxTries) {
-          response = await this.requestRaw(info, data);
+          response = await this.requestRaw(info2, data);
           if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
             let authenticationHandler;
             for (let i = 0; i < this.handlers.length; i++) {
@@ -3571,7 +3585,7 @@ var require_http_client = __commonJS({
               }
             }
             if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info, data);
+              return authenticationHandler.handleAuthentication(this, info2, data);
             } else {
               return response;
             }
@@ -3594,8 +3608,8 @@ var require_http_client = __commonJS({
                 }
               }
             }
-            info = this._prepareRequest(verb, parsedRedirectUrl, headers);
-            response = await this.requestRaw(info, data);
+            info2 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+            response = await this.requestRaw(info2, data);
             redirectsRemaining--;
           }
           if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
@@ -3615,7 +3629,7 @@ var require_http_client = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info, data) {
+      requestRaw(info2, data) {
         return new Promise((resolve, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
@@ -3623,13 +3637,13 @@ var require_http_client = __commonJS({
             }
             resolve(res);
           };
-          this.requestRawWithCallback(info, data, callbackForResult);
+          this.requestRawWithCallback(info2, data, callbackForResult);
         });
       }
-      requestRawWithCallback(info, data, onResult) {
+      requestRawWithCallback(info2, data, onResult) {
         let socket;
         if (typeof data === "string") {
-          info.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info2.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         let handleResult = (err, res) => {
@@ -3638,7 +3652,7 @@ var require_http_client = __commonJS({
             onResult(err, res);
           }
         };
-        let req = info.httpModule.request(info.options, (msg) => {
+        let req = info2.httpModule.request(info2.options, (msg) => {
           let res = new HttpClientResponse(msg);
           handleResult(null, res);
         });
@@ -3649,7 +3663,7 @@ var require_http_client = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error("Request timeout: " + info.options.path), null);
+          handleResult(new Error("Request timeout: " + info2.options.path), null);
         });
         req.on("error", function(err) {
           handleResult(err, null);
@@ -3671,27 +3685,27 @@ var require_http_client = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info = {};
-        info.parsedUrl = requestUrl;
-        const usingSsl = info.parsedUrl.protocol === "https:";
-        info.httpModule = usingSsl ? https : http;
+        const info2 = {};
+        info2.parsedUrl = requestUrl;
+        const usingSsl = info2.parsedUrl.protocol === "https:";
+        info2.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info.options = {};
-        info.options.host = info.parsedUrl.hostname;
-        info.options.port = info.parsedUrl.port ? parseInt(info.parsedUrl.port) : defaultPort;
-        info.options.path = (info.parsedUrl.pathname || "") + (info.parsedUrl.search || "");
-        info.options.method = method;
-        info.options.headers = this._mergeHeaders(headers);
+        info2.options = {};
+        info2.options.host = info2.parsedUrl.hostname;
+        info2.options.port = info2.parsedUrl.port ? parseInt(info2.parsedUrl.port) : defaultPort;
+        info2.options.path = (info2.parsedUrl.pathname || "") + (info2.parsedUrl.search || "");
+        info2.options.method = method;
+        info2.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info.options.headers["user-agent"] = this.userAgent;
+          info2.options.headers["user-agent"] = this.userAgent;
         }
-        info.options.agent = this._getAgent(info.parsedUrl);
+        info2.options.agent = this._getAgent(info2.parsedUrl);
         if (this.handlers) {
           this.handlers.forEach((handler) => {
-            handler.prepareRequest(info.options);
+            handler.prepareRequest(info2.options);
           });
         }
-        return info;
+        return info2;
       }
       _mergeHeaders(headers) {
         const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
@@ -4690,7 +4704,7 @@ var require_tool_cache = __commonJS({
     var IS_WINDOWS = process.platform === "win32";
     var IS_MAC = process.platform === "darwin";
     var userAgent = "actions/tool-cache";
-    function downloadTool(url, dest, auth, headers) {
+    function downloadTool2(url, dest, auth, headers) {
       return __awaiter(this, void 0, void 0, function* () {
         dest = dest || path.join(_getTempDirectory(), v4_1.default());
         yield io.mkdirP(path.dirname(dest));
@@ -4712,7 +4726,7 @@ var require_tool_cache = __commonJS({
         });
       });
     }
-    exports.downloadTool = downloadTool;
+    exports.downloadTool = downloadTool2;
     function downloadToolAttempt(url, dest, auth, headers) {
       return __awaiter(this, void 0, void 0, function* () {
         if (fs.existsSync(dest)) {
@@ -4873,7 +4887,7 @@ var require_tool_cache = __commonJS({
       });
     }
     exports.extractXar = extractXar;
-    function extractZip(file, dest) {
+    function extractZip2(file, dest) {
       return __awaiter(this, void 0, void 0, function* () {
         if (!file) {
           throw new Error("parameter 'file' is required");
@@ -4887,7 +4901,7 @@ var require_tool_cache = __commonJS({
         return dest;
       });
     }
-    exports.extractZip = extractZip;
+    exports.extractZip = extractZip2;
     function extractZipWin(file, dest) {
       return __awaiter(this, void 0, void 0, function* () {
         const escapedFile = file.replace(/'/g, "''").replace(/"|\n|\r/g, "");
@@ -4945,7 +4959,7 @@ var require_tool_cache = __commonJS({
         yield exec_1.exec(`"${unzipPath}"`, args, { cwd: dest });
       });
     }
-    function cacheDir(sourceDir, tool, version2, arch) {
+    function cacheDir2(sourceDir, tool, version2, arch) {
       return __awaiter(this, void 0, void 0, function* () {
         version2 = semver.clean(version2) || version2;
         arch = arch || os.arch();
@@ -4963,7 +4977,7 @@ var require_tool_cache = __commonJS({
         return destPath;
       });
     }
-    exports.cacheDir = cacheDir;
+    exports.cacheDir = cacheDir2;
     function cacheFile(sourceFile, targetFile, tool, version2, arch) {
       return __awaiter(this, void 0, void 0, function* () {
         version2 = semver.clean(version2) || version2;
@@ -4982,7 +4996,7 @@ var require_tool_cache = __commonJS({
       });
     }
     exports.cacheFile = cacheFile;
-    function find(toolName, versionSpec, arch) {
+    function find2(toolName, versionSpec, arch) {
       if (!toolName) {
         throw new Error("toolName parameter is required");
       }
@@ -5009,7 +5023,7 @@ var require_tool_cache = __commonJS({
       }
       return toolPath;
     }
-    exports.find = find;
+    exports.find = find2;
     function findAllVersions(toolName, arch) {
       const versions = [];
       arch = arch || os.arch();
@@ -5149,9 +5163,9 @@ var require_tool_cache = __commonJS({
   }
 });
 
-// src/setup-nu.js
-var core = require_core();
-var tc = require_tool_cache();
+// src/setup-nu.ts
+var core = __toESM(require_core());
+var tc = __toESM(require_tool_cache());
 async function install(version2) {
   core.info(`Setting up Nu ${version2}...`);
   const cachedPath = tc.find("nu", version2);
@@ -5161,7 +5175,7 @@ async function install(version2) {
     return;
   }
   const file = fileName(version2);
-  const url = `https://github.com/nushell/nushell/releases/download/0.63.0/v${version2}/${file}`;
+  const url = `https://github.com/nushell/nushell/releases/download/${version2}/${file}`;
   core.info(`Downloading Nu from ${url}.`);
   const zipPath = await tc.downloadTool(url);
   const extractedFolder = await tc.extractZip(zipPath);
