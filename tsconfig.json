@@ -1,0 +1,7 @@
+{
+	"extends": "@mckayla/tsconfig",
+	"compilerOptions": {
+		"checkJs": true
+	},
+	"include": ["./src/**/*"]
+}

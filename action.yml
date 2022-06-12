@@ -1,0 +1,7 @@
+name: "Setup Nu"
+description: "Github Action to setup Nu"
+author: "Kayla Washburn"
+
+runs:
+  using: node16
+  main: "./src/setup-nu.js"
