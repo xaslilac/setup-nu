@@ -2021,9 +2021,9 @@ var require_io = __commonJS({
         currentDepth++;
         yield mkdirP(destDir);
         const files = yield ioUtil.readdir(sourceDir);
-        for (const fileName2 of files) {
-          const srcFile = `${sourceDir}/${fileName2}`;
-          const destFile = `${destDir}/${fileName2}`;
+        for (const fileName of files) {
+          const srcFile = `${sourceDir}/${fileName}`;
+          const destFile = `${destDir}/${fileName}`;
           const srcFileStat = yield ioUtil.lstat(srcFile);
           if (srcFileStat.isDirectory()) {
             yield cpDirRecursive(srcFile, destFile, currentDepth, force);
@@ -4206,8 +4206,8 @@ var require_toolrunner = __commonJS({
             if (this.options.cwd && !(yield ioUtil.exists(this.options.cwd))) {
               return reject(new Error(`The cwd: ${this.options.cwd} does not exist!`));
             }
-            const fileName2 = this._getSpawnFileName();
-            const cp = child.spawn(fileName2, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName2));
+            const fileName = this._getSpawnFileName();
+            const cp = child.spawn(fileName, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName));
             let stdbuffer = "";
             if (cp.stdout) {
               cp.stdout.on("data", (data) => {
@@ -4822,7 +4822,7 @@ var require_tool_cache = __commonJS({
       });
     }
     exports.extract7z = extract7z;
-    function extractTar(file, dest, flags = "xz") {
+    function extractTar2(file, dest, flags = "xz") {
       return __awaiter(this, void 0, void 0, function* () {
         if (!file) {
           throw new Error("parameter 'file' is required");
@@ -4865,7 +4865,7 @@ var require_tool_cache = __commonJS({
         return dest;
       });
     }
-    exports.extractTar = extractTar;
+    exports.extractTar = extractTar2;
     function extractXar(file, dest, flags = []) {
       return __awaiter(this, void 0, void 0, function* () {
         assert_1.ok(IS_MAC, "extractXar() not supported on current OS");
@@ -5170,38 +5170,36 @@ var fs = __toESM(require("fs/promises"));
 var path = __toESM(require("path"));
 async function install(version2) {
   core.info(`Setting up Nu ${version2}...`);
-  const file = fileName(version2);
-  const url = `https://github.com/nushell/nushell/releases/download/${version2}/${file}`;
-  core.info(`Downloading Nu from ${url}.`);
-  const zipPath = await tc.downloadTool(url);
-  const extractedFolder = await tc.extractZip(zipPath);
-  const bin = path.join(extractedFolder, extractedBin(version2));
+  const bin = await extractNu(version2);
   core.info("bin: " + JSON.stringify(await fs.readdir(bin)));
   core.info(`Cached Nu to ${bin}.`);
   core.addPath(bin);
 }
-function extractedBin(version2) {
-  const prefix = `nu_${version2.replaceAll(".", "_")}`;
+async function extractNu(version2) {
+  const assetPrefix = `nu_${version2.replaceAll(".", "_")}`;
+  const assetUrlBase = `https://github.com/nushell/nushell/releases/download/${version2}/${releaseAssetPrefix}`;
   switch (process.platform) {
-    case "linux":
-      return `${prefix}_linux/nushell-${version2}`;
-    case "darwin":
-      return `${prefix}_macOS/nushell-${version2}`;
-    case "win32":
-      return `${prefix}_windows/nushell-${version2}`;
-    default:
-      throw new Error(`Unsupported platform ${process.platform}.`);
-  }
-}
-function fileName(version2) {
-  const prefix = `nu_${version2.replaceAll(".", "_")}`;
-  switch (process.platform) {
-    case "linux":
-      return `${prefix}_linux.tar.gz`;
-    case "darwin":
-      return `${prefix}_macOS.zip`;
-    case "win32":
-      return `${prefix}_windows.zip`;
+    case "linux": {
+      const assetUrl = `${assetUrlBase}_linux.tar.gz`;
+      core.info(`Downloading Nu from ${assetUrl}.`);
+      const archivePath = await tc.downloadTool(assetUrl);
+      const extractedFolder = await tc.extractTar(archivePath);
+      return path.join(extractedFolder, `${assetPrefix}_linux/nushell-${version2}`);
+    }
+    case "darwin": {
+      const assetUrl = `${assetUrlBase}_macOS.zip`;
+      core.info(`Downloading Nu from ${assetUrl}.`);
+      const archivePath = await tc.downloadTool(assetUrl);
+      const extractedFolder = await tc.extractZip(archivePath);
+      return path.join(extractedFolder, `${assetPrefix}_linux/nushell-${version2}`);
+    }
+    case "win32": {
+      const assetUrl = `${assetUrlBase}_windows.zip`;
+      core.info(`Downloading Nu from ${assetUrl}.`);
+      const archivePath = await tc.downloadTool(assetUrl);
+      const extractedFolder = await tc.extractZip(archivePath);
+      return path.join(extractedFolder, `${assetPrefix}_linux/nushell-${version2}`);
+    }
     default:
       throw new Error(`Unsupported platform ${process.platform}.`);
   }
