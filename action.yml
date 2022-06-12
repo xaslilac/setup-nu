@@ -5,3 +5,8 @@ author: "Kayla Washburn"
 runs:
   using: node16
   main: "./src/setup-nu.js"
+
+inputs:
+  nu-version:
+    description: The version of Nu that should be installed
+    default: "0.63.0"

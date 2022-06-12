@@ -42,6 +42,6 @@ function fileName(version) {
 	}
 }
 
-module.exports = {
-	install,
-};
+const version = core.getInput("nu-version");
+
+install(version);
