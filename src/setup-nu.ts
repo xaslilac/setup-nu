@@ -1,24 +1,22 @@
 import * as core from "@actions/core";
 import * as tc from "@actions/tool-cache";
-import * as fs from "fs/promises";
 import * as path from "path";
 
 async function install(version: string) {
 	core.info(`Setting up Nu ${version}...`);
 
-	// const cachedPath = tc.find("nu", version);
-	// if (cachedPath) {
-	// 	core.info(`Using cached Nu installation from ${cachedPath}.`);
-	// 	core.addPath(cachedPath);
-	// 	return;
-	// }
-
-	// const newCachedPath = await tc.cacheDir(bin, "nu", version);
+	const cachedPath = tc.find("nu", version);
+	if (cachedPath) {
+		core.info(`Using cached Nu installation from ${cachedPath}.`);
+		core.addPath(cachedPath);
+		return;
+	}
 
 	const bin = await extractNu(version);
+	const newCachedPath = await tc.cacheDir(bin, "nu", version);
 
 	core.info(`Cached Nu to ${bin}.`);
-	core.addPath(bin);
+	core.addPath(newCachedPath);
 }
 
 async function extractNu(version: string) {
