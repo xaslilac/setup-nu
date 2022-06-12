@@ -1,6 +1,7 @@
 import * as core from "@actions/core";
 import * as tc from "@actions/tool-cache";
 import * as fs from "fs/promises";
+import * as path from "path";
 
 async function install(version: string) {
 	core.info(`Setting up Nu ${version}...`);
@@ -18,15 +19,29 @@ async function install(version: string) {
 	core.info(`Downloading Nu from ${url}.`);
 	const zipPath = await tc.downloadTool(url);
 	const extractedFolder = await tc.extractZip(zipPath);
-	// const newCachedPath = await tc.cacheDir(extractedFolder, "nu", version);
 
-	// core.info(`Cached Nu to ${newCachedPath}.`);
-	// core.addPath(newCachedPath);
+	const bin = `${extractedFolder}/${extractedBin(version)}`;
+	const newCachedPath = await tc.cacheDir(bin, "nu", version);
 
-	core.info("bin: " + JSON.stringify(await fs.readdir(extractedFolder)));
+	core.info("bin: " + JSON.stringify(await fs.readdir(newCachedPath)));
 
-	core.info(`Cached Nu to ${extractedFolder}.`);
-	core.addPath(extractedFolder);
+	core.info(`Cached Nu to ${newCachedPath}.`);
+	core.addPath(newCachedPath);
+}
+
+function extractedBin(version: string) {
+	const prefix = `nu_${version.replaceAll(".", "_")}`;
+	// TODO: `process.arch` `"arm64"` `"x64"`
+	switch (process.platform) {
+		case "linux":
+			return `${prefix}_linux`;
+		case "darwin":
+			return `${prefix}_macOS`;
+		case "win32":
+			return `${prefix}_windows`;
+		default:
+			throw new Error(`Unsupported platform ${process.platform}.`);
+	}
 }
 
 function fileName(version: string) {
