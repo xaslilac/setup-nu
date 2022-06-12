@@ -20,13 +20,13 @@ async function install(version: string) {
 	const zipPath = await tc.downloadTool(url);
 	const extractedFolder = await tc.extractZip(zipPath);
 
-	const bin = `${extractedFolder}/${extractedBin(version)}`;
-	const newCachedPath = await tc.cacheDir(bin, "nu", version);
+	const bin = path.join(extractedFolder, extractedBin(version));
+	// const newCachedPath = await tc.cacheDir(bin, "nu", version);
 
-	core.info("bin: " + JSON.stringify(await fs.readdir(newCachedPath)));
+	core.info("bin: " + JSON.stringify(await fs.readdir(bin)));
 
-	core.info(`Cached Nu to ${newCachedPath}.`);
-	core.addPath(newCachedPath);
+	core.info(`Cached Nu to ${bin}.`);
+	core.addPath(bin);
 }
 
 function extractedBin(version: string) {
@@ -34,11 +34,11 @@ function extractedBin(version: string) {
 	// TODO: `process.arch` `"arm64"` `"x64"`
 	switch (process.platform) {
 		case "linux":
-			return `${prefix}_linux`;
+			return `${prefix}_linux/nushell-${version}`;
 		case "darwin":
-			return `${prefix}_macOS`;
+			return `${prefix}_macOS/nushell-${version}`;
 		case "win32":
-			return `${prefix}_windows`;
+			return `${prefix}_windows/nushell-${version}`;
 		default:
 			throw new Error(`Unsupported platform ${process.platform}.`);
 	}
