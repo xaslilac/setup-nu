@@ -5,6 +5,8 @@ const tc = require("@actions/tool-cache");
  * @param string version
  */
 async function install(version) {
+	core.info(`Setting up Nu ${version}...`);
+
 	const cachedPath = tc.find("nu", version);
 	if (cachedPath) {
 		core.info(`Using cached Nu installation from ${cachedPath}.`);
@@ -12,7 +14,7 @@ async function install(version) {
 		return;
 	}
 
-	const file = fileName();
+	const file = fileName(version);
 	const url = `https://github.com/nushell/nushell/releases/download/0.63.0/v${version}/${file}`;
 
 	core.info(`Downloading Nu from ${url}.`);

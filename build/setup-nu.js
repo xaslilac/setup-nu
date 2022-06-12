@@ -5153,13 +5153,14 @@ var require_tool_cache = __commonJS({
 var core = require_core();
 var tc = require_tool_cache();
 async function install(version2) {
+  core.info(`Setting up Nu ${version2}...`);
   const cachedPath = tc.find("nu", version2);
   if (cachedPath) {
     core.info(`Using cached Nu installation from ${cachedPath}.`);
     core.addPath(cachedPath);
     return;
   }
-  const file = fileName();
+  const file = fileName(version2);
   const url = `https://github.com/nushell/nushell/releases/download/0.63.0/v${version2}/${file}`;
   core.info(`Downloading Nu from ${url}.`);
   const zipPath = await tc.downloadTool(url);
