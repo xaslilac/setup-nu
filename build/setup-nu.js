@@ -5191,14 +5191,14 @@ async function extractNu(version2) {
       core.info(`Downloading Nu from ${assetUrl}.`);
       const archivePath = await tc.downloadTool(assetUrl);
       const extractedFolder = await tc.extractZip(archivePath);
-      return path.join(extractedFolder, `${assetPrefix}_linux/nushell-${version2}`);
+      return path.join(extractedFolder, `${assetPrefix}_macOS/nushell-${version2}`);
     }
     case "win32": {
       const assetUrl = `${assetUrlBase}_windows.zip`;
       core.info(`Downloading Nu from ${assetUrl}.`);
       const archivePath = await tc.downloadTool(assetUrl);
       const extractedFolder = await tc.extractZip(archivePath);
-      return path.join(extractedFolder, `${assetPrefix}_linux/nushell-${version2}`);
+      return path.join(extractedFolder, `${assetPrefix}_windows/nushell-${version2}`);
     }
     default:
       throw new Error(`Unsupported platform ${process.platform}.`);
